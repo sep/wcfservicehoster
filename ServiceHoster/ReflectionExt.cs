@@ -6,7 +6,7 @@ namespace ServiceHoster
 {
     public static class ReflectionExt
     {
-        public static bool IsWcfServiceClass(this Type type)
+        public static bool IsWcfService(this Type type)
         {
             if (!type.IsClass || !type.HasAttrbibute<ServiceContractAttribute>())
                 return false;

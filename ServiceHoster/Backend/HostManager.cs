@@ -19,7 +19,7 @@ namespace ServiceHoster.Backend
 
             Services = svcAssembly
                 .GetTypes()
-                .Where(t => t.IsWcfServiceClass())
+                .Where(t => t.IsWcfService())
                 .Select(t =>
                 {
                     var metadata = new ServiceMetadata
