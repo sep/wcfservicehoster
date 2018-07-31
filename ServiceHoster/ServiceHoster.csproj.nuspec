@@ -18,6 +18,7 @@
   </metadata>
   <files>
     <file src="../README.md" target="" />
-    <file src="bin\Release\*.*" target="lib" />
+    <file src="bin\Release\Optional.*" target="lib" />
+    <file src="bin\Release\ServiceHoster.*" target="lib" />
   </files>
 </package>
