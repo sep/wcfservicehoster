@@ -30,7 +30,7 @@ namespace ServiceHoster.Controller
             Console.Out.WriteLine("Service Endpoints:");
             hosts.SelectMany(h => h.Services).ToList().ForEach(service =>
             {
-                Console.Out.WriteLine(service);
+                Console.Out.WriteLine(service.Name);
                 Console.WriteLine($"  WSDL: {service.WsdlAddress ?? "N/A"}");
                 foreach (var endpoint in service.MexEndpoints)
                     Console.WriteLine($"  {endpoint}");
