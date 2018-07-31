@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>WcfServiceHoster</id>
+    <version>$version$</version>
+    <authors>Jon Fuller</authors>
+    <owners>SEP, Inc.</owners>
+    <licenseUrl>https://raw.githubusercontent.com/sep/wcfservicehoster/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/sep/wcfservicehoster</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Console app for self-hosting WCF services.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>wcf</tags>
+    <dependencies>
+      <dependency id="Optional" version="4.0.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="../README.md" target="" />
+    <file src="bin\Release\*.*" target="lib" />
+  </files>
+</package>
