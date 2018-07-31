@@ -15,37 +15,37 @@ namespace ServiceHoster.Backend
 
         public void LoadServiceAssemblyAndServices(string assemblyPath)
         {
-            var svcAssembly = Assembly.Load(new AssemblyName { CodeBase = assemblyPath });
-
-            Services = svcAssembly
+            Services = Assembly.Load(new AssemblyName { CodeBase = assemblyPath })
                 .GetTypes()
                 .Where(t => t.IsWcfService())
-                .Select(t =>
-                {
-                    var metadata = new ServiceMetadata
-                    {
-                        FullName = t.FullName,
-                        Host = new ServiceHost(t, new Uri[0]),
-                    };
-
-                    metadata.MexEndpoints = metadata.Host.Description.Endpoints
-                        .Where(e => e.Contract.ContractType == typeof(IMetadataExchange))
-                        .Select(e => e.Address.Uri.AbsoluteUri)
-                        .ToArray();
-                    metadata.Endpoints = metadata.Host.Description.Endpoints
-                        .Where(e => e.Contract.ContractType != typeof(IMetadataExchange))
-                        .Select(e => e.Address.Uri.AbsoluteUri)
-                        .ToArray();
-
-                    GetWsdlEndpoint(metadata).Match(
-                        some: _ => metadata.WsdlEndpointAddress = _,
-                        none: () => { });
-                    return metadata;
-                })
+                .Select(SetUpService)
                 .ToArray();
         }
 
-        
+        private static ServiceMetadata SetUpService(Type serviceType)
+        {
+            var metadata = new ServiceMetadata
+            {
+                FullName = serviceType.FullName,
+                Host = new ServiceHost(serviceType, new Uri[0]),
+            };
+
+            metadata.MexEndpoints = metadata.Host.Description.Endpoints
+                .Where(e => e.Contract.ContractType == typeof(IMetadataExchange))
+                .Select(e => e.Address.Uri.AbsoluteUri)
+                .ToArray();
+            metadata.Endpoints = metadata.Host.Description.Endpoints
+                .Where(e => e.Contract.ContractType != typeof(IMetadataExchange))
+                .Select(e => e.Address.Uri.AbsoluteUri)
+                .ToArray();
+
+            GetWsdlEndpoint(metadata).Match(
+                some: _ => metadata.WsdlEndpointAddress = _,
+                none: () => { });
+            return metadata;
+        }
+
+
         public void OpenServices()
         {
             foreach (var info in Services)
