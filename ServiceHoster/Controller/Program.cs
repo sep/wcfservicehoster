@@ -46,7 +46,11 @@ namespace ServiceHoster.Controller
                 Console.Out.WriteLine($"Closed services...");
             };
             Console.Out.WriteLine("Press <Ctrl+C> to stop.");
-            Console.ReadLine();
+
+            while (true)
+            {
+                Console.ReadLine();
+            }
         }
     }
 }
