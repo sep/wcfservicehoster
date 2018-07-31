@@ -9,7 +9,7 @@ var target = Argument("target", "default");
 var configuration = Argument("configuration", "Release");
 
 var solution = File("ServiceHoster.sln");
-var version = "1.0.0";
+var version = "1.0.2";
 
 var nugetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY");
 var nugetSource = Environment.GetEnvironmentVariable("NUGET_SOURCE");
@@ -72,6 +72,7 @@ Task("package-push")
             ApiKey = nugetApiKey
         });
      });
+
 Task("default")
     .IsDependentOn("rebuild");
 
