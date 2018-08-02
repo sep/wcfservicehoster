@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace ServiceHoster.Controller
@@ -9,14 +10,14 @@ namespace ServiceHoster.Controller
         {
             Console.Title = "WCF Service Hoster";
 
-            // assumes the assembly's config file is in the same location, named the same with .config appended
             var hosts = (args ?? new string[0])
-                .Select(dll =>
+                .Select(dll => new{dll, config = $"{dll}.config"}) // assumes the assembly's config file is in the same location, named the same with .config appended
+                .Where(h => File.Exists(h.dll) && File.Exists(h.config))
+                .Select(h =>
                 {
-                    var config = dll + ".config";
-                    Console.Out.WriteLine($"Creating ServiceHost for for {dll} ({config}).");
+                    Console.Out.WriteLine($"Creating ServiceHost for for {h.dll} ({h.config}).");
 
-                    return new AppDomainHost(dll, dll + ".config");
+                    return new AppDomainHost(h.dll, h.config);
                 })
                 .ToList();
 
@@ -25,7 +26,6 @@ namespace ServiceHoster.Controller
                 string.Join(Environment.NewLine, hosts.SelectMany(h => h.Services).Select(h => h.Name).ToArray()));
             foreach (var host in hosts)
                 host.OpenServices();
-
 
             Console.Out.WriteLine("Service Endpoints:");
             hosts.SelectMany(h => h.Services).ToList().ForEach(service =>
