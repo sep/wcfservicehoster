@@ -55,7 +55,7 @@ Task("package-push")
     .Does(() =>
     {
         var version = XmlPeek("ServiceHoster/ServiceHoster.csproj", "/Project/PropertyGroup/Version");
-        var package = $"./artifacts/WcfServiceHoster.{version}.nupkg";
+        var package = $"./ServiceHoster/artifacts/WcfServiceHoster.{version}.nupkg";
 
         NuGetPush(package, new NuGetPushSettings {
             Source = nugetSource,
