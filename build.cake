@@ -9,7 +9,6 @@ var target = Argument("target", "default");
 var configuration = Argument("configuration", "Release");
 
 var solution = File("ServiceHoster.sln");
-var version = "1.0.2";
 
 var nugetApiKey = Environment.GetEnvironmentVariable("NUGET_API_KEY");
 var nugetSource = Environment.GetEnvironmentVariable("NUGET_SOURCE");
@@ -48,23 +47,14 @@ Task("package-build")
     {
         MSBuild(solution, settings => settings.SetConfiguration("Release")
             .UseToolVersion(MSBuildToolVersion.Default)
-            .WithTarget("build"));
-
-        NuGetPack("ServiceHoster/ServiceHoster.csproj.nuspec", new NuGetPackSettings
-        {
-            OutputDirectory = @"artifacts\",
-            Properties = new Dictionary<string, string>
-            {
-                { "Configuration", "Release" },
-                { "version", version }
-            }
-        });
+            .WithTarget("pack"));
     });
 
 Task("package-push")
     .Description("Pushes NuGet package to NuGet")
     .Does(() =>
     {
+        var version = XmlPeek("ServiceHoster/ServiceHoster.csproj", "/Project/PropertyGroup/Version");
         var package = $"./artifacts/WcfServiceHoster.{version}.nupkg";
 
         NuGetPush(package, new NuGetPushSettings {
