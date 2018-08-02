@@ -17,8 +17,12 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <Version>1.0.3</Version>
-    <FileVersion>1.0.3</FileVersion>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+
+    <Version>1.0.4</Version>
+    <FileVersion>1.0.4</FileVersion>
     <Authors>Jon Fuller</Authors>
     <Description>Self-hosts WCF Services</Description>
     <Copyright>Copyright ©  2018 SEP, Inc</Copyright>
