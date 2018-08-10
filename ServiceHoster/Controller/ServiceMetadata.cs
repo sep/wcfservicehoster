@@ -1,4 +1,6 @@
-﻿namespace ServiceHoster.Controller
+﻿using System.ServiceModel;
+
+namespace ServiceHoster.Controller
 {
     public class ServiceMetadata
     {

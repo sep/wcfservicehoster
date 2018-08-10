@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.2.1" />
     <PackageReference Include="Optional" Version="4.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,11 +23,11 @@
     <OutputType>Exe</OutputType>
     <StartupObject />
 
-    <Version>1.0.4</Version>
-    <FileVersion>1.0.4</FileVersion>
+    <Version>1.0.5</Version>
+    <FileVersion>$(Version)</FileVersion>
     <Authors>Jon Fuller</Authors>
     <Description>Self-hosts WCF Services</Description>
-    <Copyright>Copyright ©  2018 SEP, Inc</Copyright>
+    <Copyright>Copyright © 2018 SEP, Inc</Copyright>
     <Title>A simple WCF service hoster. Suitable for hosting inside Docker.</Title>
     <PackageId>WcfServiceHoster</PackageId>
     <PackageVersion>$(Version)</PackageVersion>

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.ServiceModel;
 using ServiceHoster.Backend;
 
 namespace ServiceHoster.Controller
@@ -22,6 +23,7 @@ namespace ServiceHoster.Controller
         }
 
         public IEnumerable<ServiceMetadata> Services => _hostManager.Services.Select(ServiceMetadata.From);
+        public IEnumerable<(string name, CommunicationState state)> Status => _hostManager.Status;
 
         public void OpenServices()
         {

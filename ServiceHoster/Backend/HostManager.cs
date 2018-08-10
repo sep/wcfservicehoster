@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
@@ -45,18 +46,19 @@ namespace ServiceHoster.Backend
             return metadata;
         }
 
-
         public void OpenServices()
         {
-            foreach (var info in Services)
-                info.Host.Open();
+            foreach (var service in Services)
+                service.Host.Open();
         }
 
         public void CloseServices()
         {
-            foreach (var info in Services)
-                info.Host.Close();
+            foreach (var service in Services)
+                service.Host.Close();
         }
+
+        public (string, CommunicationState)[] Status => Services.Select(s => (s.FullName, s.Host.State)).ToArray();
 
         public override object InitializeLifetimeService()
         {
