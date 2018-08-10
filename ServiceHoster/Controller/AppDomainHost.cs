@@ -23,7 +23,7 @@ namespace ServiceHoster.Controller
         }
 
         public IEnumerable<ServiceMetadata> Services => _hostManager.Services.Select(ServiceMetadata.From);
-        public IEnumerable<(string name, CommunicationState state)> Status => _hostManager.Status;
+        public IEnumerable<ServiceStatus> Status => _hostManager.Status;
 
         public void OpenServices()
         {

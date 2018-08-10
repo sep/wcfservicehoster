@@ -67,10 +67,11 @@ namespace ServiceHoster.Controller
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 if (options.HasStatus)
                 {
-                    var state = hosts.SelectMany(h => h.Status).All(s => s.state == CommunicationState.Opened);
+                    var allOpen = hosts.SelectMany(h => h.Status).All(s => s.State == CommunicationState.Opened);
+
                     UpdateStatus(
                         options.StatusFile,
-                        state ? "OK" : string.Join(", ", hosts.SelectMany(h => h.Status).Select(s => $"{s.name} - {s.state}")));
+                        allOpen ? "OK" : string.Join(", ", hosts.SelectMany(h => h.Status).Select(s => $"{s.ServiceName} - {s.State}")));
                 }
             }
         }

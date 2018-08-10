@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
@@ -58,7 +57,7 @@ namespace ServiceHoster.Backend
                 service.Host.Close();
         }
 
-        public (string, CommunicationState)[] Status => Services.Select(s => (s.FullName, s.Host.State)).ToArray();
+        public ServiceStatus[] Status => Services.Select(s => new ServiceStatus(s.FullName, s.Host.State)).ToArray();
 
         public override object InitializeLifetimeService()
         {
