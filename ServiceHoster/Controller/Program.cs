@@ -33,11 +33,16 @@ namespace ServiceHoster.Controller
                 })
                 .ToList();
 
-            Console.Out.WriteLine(
-                "opening...{0}",
-                string.Join(Environment.NewLine, hosts.SelectMany(h => h.Services).Select(h => h.Name).ToArray()));
             foreach (var host in hosts)
+            {
+                Console.Out.WriteLine($"Opening services for ...{host.HostInfo.AssemblyPath}");
+                Console.Out.WriteLine($"  config: {host.HostInfo.AssemblyConfig}");
+                Console.Out.WriteLine($"  assembly version: {host.HostInfo.AssemblyVersion}");
+                Console.Out.WriteLine($"  file version: {host.HostInfo.FileVersion}");
+                Console.Out.WriteLine("  services: {0}",
+                    string.Join(", ", host.Services.Select(h => $"{h.Name}").ToArray()));
                 host.OpenServices();
+            }
 
             Console.Out.WriteLine("Service Endpoints:");
             hosts.SelectMany(h => h.Services).ToList().ForEach(service =>

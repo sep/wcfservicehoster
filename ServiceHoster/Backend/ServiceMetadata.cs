@@ -10,6 +10,8 @@ namespace ServiceHoster.Backend
         private ServiceHost _host;
 
         public string FullName { get; set; }
+        public string AssemblyVersion { get; set; }
+        public string FileVersion { get; set; }
         public string[] MexEndpoints { get; set; }
         public string[] Endpoints { get; set; }
         public string WsdlEndpointAddress { get; set; }

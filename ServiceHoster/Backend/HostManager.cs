@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
@@ -12,14 +13,21 @@ namespace ServiceHoster.Backend
     public class HostManager : MarshalByRefObject
     {
         public ServiceMetadata[] Services { get; private set; } = new ServiceMetadata[0];
+        public HostMetadata HostInfo { get; private set; } = new HostMetadata();
 
         public void LoadServiceAssemblyAndServices(string assemblyPath)
         {
-            Services = Assembly.Load(new AssemblyName { CodeBase = assemblyPath })
+            var assembly = Assembly.Load(new AssemblyName {CodeBase = assemblyPath});
+            Services = assembly
                 .GetTypes()
                 .Where(t => t.IsWcfService())
                 .Select(SetUpService)
                 .ToArray();
+            HostInfo = new HostMetadata
+            {
+                FileVersion = FileVersionInfo.GetVersionInfo(assemblyPath).FileVersion,
+                AssemblyVersion = assembly.GetName().Version.ToString(4),
+            };
         }
 
         private static ServiceMetadata SetUpService(Type serviceType)

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.ServiceModel;
 using ServiceHoster.Backend;
 
 namespace ServiceHoster.Controller
@@ -12,9 +11,14 @@ namespace ServiceHoster.Controller
     public class AppDomainHost
     {
         private readonly HostManager _hostManager;
+        private readonly string _assemblyPath;
+        private readonly string _assemblyConfig;
 
         public AppDomainHost(string assemblyPath, string configPath)
         {
+            _assemblyPath = assemblyPath;
+            _assemblyConfig = configPath;
+
             var assemblyFullPath = Path.GetFullPath(assemblyPath);
             var appDomain = CreateAppDomain(Path.GetDirectoryName(assemblyFullPath), configPath);
 
@@ -22,6 +26,7 @@ namespace ServiceHoster.Controller
             _hostManager.LoadServiceAssemblyAndServices(assemblyPath);
         }
 
+        public HostMetadata HostInfo => HostMetadata.From(_hostManager.HostInfo, _assemblyPath, _assemblyConfig);
         public IEnumerable<ServiceMetadata> Services => _hostManager.Services.Select(ServiceMetadata.From);
         public IEnumerable<ServiceStatus> Status => _hostManager.Status;
 
