@@ -5,25 +5,27 @@ using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Threading;
+using Optional;
 
 namespace ServiceHoster.Controller
 {
     public class ServiceRunner : IDisposable
     {
-        private readonly Options _options;
+        private readonly Option<string> _pidFile;
+        private readonly Option<string> _statusFile;
         private readonly TextWriter _out;
         private readonly TextWriter _err;
         private readonly List<AppDomainHost> _hosts;
         private bool _closing;
 
-        public ServiceRunner(Options options, TextWriter @out, TextWriter err)
+        public ServiceRunner(IEnumerable<string> serviceDlls, Option<string> pidFile, Option<string> statusFile, TextWriter @out, TextWriter err)
         {
-            _options = options;
+            _pidFile = pidFile;
+            _statusFile = statusFile;
             _out = @out;
             _err = err;
 
-            _hosts = _options
-                .ServiceDlls
+            _hosts = serviceDlls
                 .Select(dll => new
                 {
                     dll,
@@ -65,19 +67,21 @@ namespace ServiceHoster.Controller
         {
             try
             {
-                if (_options.HasPidFile)
-                {
-                    File.WriteAllText(_options.PidFile, Process.GetCurrentProcess().Id.ToString());
-                }
+                _pidFile.Match(
+                    filename => File.WriteAllText(filename, Process.GetCurrentProcess().Id.ToString()),
+                    () => { });
 
                 runner();
             }
             finally
             {
-                if (_options.HasPidFile && File.Exists(_options.PidFile))
-                {
-                    File.Delete(_options.PidFile);
-                }
+                _pidFile.Match(
+                    filename =>
+                    {
+                        if (File.Exists(filename))
+                            File.Delete(filename);
+                    },
+                    () => { });
             }
         }
 
@@ -85,46 +89,61 @@ namespace ServiceHoster.Controller
         {
             foreach (var host in _hosts)
             {
-                _out.WriteLine($"Opening services for ...{host.HostInfo.AssemblyPath}");
-                _out.WriteLine($"  config: {host.HostInfo.AssemblyConfig}");
-                _out.WriteLine($"  assembly version: {host.HostInfo.AssemblyVersion}");
-                _out.WriteLine($"  file version: {host.HostInfo.FileVersion}");
-                _out.WriteLine("  services: {0}",
-                    string.Join(", ", host.Services.Select(h => $"{h.Name}").ToArray()));
+                LogOpeningService(host);
                 host.OpenServices();
             }
 
             _out.WriteLine("Service Endpoints:");
-            _hosts.SelectMany(h => h.Services).ToList().ForEach(service =>
-            {
-                _out.WriteLine(service.Name);
-                _out.WriteLine($"  WSDL: {service.WsdlAddress ?? "N/A"}");
-                foreach (var endpoint in service.MexEndpoints)
-                    _out.WriteLine($"  {endpoint}");
-                foreach (var endpoint in service.Endpoints)
-                    _out.WriteLine($"  {endpoint}");
-            });
+            _hosts
+                .SelectMany(h => h.Services)
+                .ToList()
+                .ForEach(LogServiceEndpoints);
+
             onServicesStarted.Set();
 
             _closing = false;
             while (!_closing)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(1));
-                if (_options.HasStatus)
-                {
-                    var allOpen = _hosts.SelectMany(h => h.Status).All(s => s.State == CommunicationState.Opened);
+                _statusFile.Match(
+                    filename => UpdateStatus(_hosts, filename),
+                    () => { });
+            }
 
-                    UpdateStatus(
-                        _options.StatusFile,
-                        allOpen
-                            ? "OK"
-                            : string.Join(", ",
-                                _hosts.SelectMany(h => h.Status).Select(s => $"{s.ServiceName} - {s.State}")));
-                }
+            void LogOpeningService(AppDomainHost serviceHost)
+            {
+                _out.WriteLine($"Opening services for ...{serviceHost.HostInfo.AssemblyPath}");
+                _out.WriteLine($"  config: {serviceHost.HostInfo.AssemblyConfig}");
+                _out.WriteLine($"  assembly version: {serviceHost.HostInfo.AssemblyVersion}");
+                _out.WriteLine($"  file version: {serviceHost.HostInfo.FileVersion}");
+                _out.WriteLine("  services: {0}",
+                    string.Join(", ", serviceHost.Services.Select(h => $"{h.Name}").ToArray()));
+            }
+
+            void LogServiceEndpoints(ServiceMetadata serviceInfo)
+            {
+                _out.WriteLine(serviceInfo.Name);
+                _out.WriteLine($"  WSDL: {serviceInfo.WsdlAddress ?? "N/A"}");
+                foreach (var endpoint in serviceInfo.MexEndpoints)
+                    _out.WriteLine($"  {endpoint}");
+                foreach (var endpoint in serviceInfo.Endpoints)
+                    _out.WriteLine($"  {endpoint}");
             }
         }
 
-        private static void UpdateStatus(string filename, string status)
+        private static void UpdateStatus(List<AppDomainHost> hosts, string statusFilename)
+        {
+            var allOpen = hosts.SelectMany(h => h.Status).All(s => s.State == CommunicationState.Opened);
+
+            UpdateStatusFile(
+                statusFilename,
+                allOpen
+                    ? "OK"
+                    : string.Join(", ",
+                        hosts.SelectMany(h => h.Status).Select(s => $"{s.ServiceName} - {s.State}")));
+        }
+
+        private static void UpdateStatusFile(string filename, string status)
         {
             File.WriteAllText(filename, status);
         }

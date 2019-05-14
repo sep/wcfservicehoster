@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using CommandLine;
+using Optional;
 
 namespace ServiceHoster.Controller
 {
@@ -16,7 +17,7 @@ namespace ServiceHoster.Controller
 
         private static void Run(Options options)
         {
-            var runner = new ServiceRunner(options, Console.Out, Console.Error);
+            var runner = new ServiceRunner(options.ServiceDlls, options.PidFileOption, options.StatusFileOption, Console.Out, Console.Error);
             runner.Start(new AutoResetEvent(false));
 
             Console.CancelKeyPress += (sender, eventArgs) =>
@@ -41,5 +42,8 @@ namespace ServiceHoster.Controller
 
         public bool HasPidFile => PidFile != null;
         public bool HasStatus => StatusFile != null;
+
+        public Option<string> PidFileOption => HasPidFile ? Option.Some(PidFile) : Option.None<string>();
+        public Option<string> StatusFileOption => HasStatus ? Option.Some(StatusFile) : Option.None<string>();
     }
 }
