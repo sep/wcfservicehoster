@@ -33,7 +33,7 @@
     <PackageVersion>$(Version)</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>wcf docker host tcp</PackageTags>
-    <PackageLicense>LICENSE</PackageLicense>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sep/wcfservicehoster</PackageProjectUrl>
     <PackageOutputPath>artifacts</PackageOutputPath>
   </PropertyGroup>
