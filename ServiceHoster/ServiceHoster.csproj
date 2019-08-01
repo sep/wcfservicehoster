@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.5.0" />
+    <PackageReference Include="CommandLineParser" Version="2.6.0" />
     <PackageReference Include="Optional" Version="4.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
@@ -23,7 +23,7 @@
     <OutputType>Exe</OutputType>
     <StartupObject />
 
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <FileVersion>$(Version)</FileVersion>
     <Authors>Jon Fuller</Authors>
     <Description>Self-hosts WCF Services</Description>
