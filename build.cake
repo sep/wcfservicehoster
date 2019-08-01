@@ -1,5 +1,5 @@
-#addin nuget:?package=Cake.ArgumentHelpers
-#addin nuget:?package=dotenv.net
+#addin nuget:?package=Cake.ArgumentHelpers&version=0.3.0
+#addin nuget:?package=dotenv.net&version=1.0.6
 
 using dotenv.net;
 
