@@ -63,6 +63,8 @@ namespace ServiceHoster.Controller
             PidFile(() => RunServices(started));
         }
 
+        public IEnumerable<RunnerMetadata> HostedServices => _hosts.Select(h => new RunnerMetadata(h.HostInfo, h.Services));
+
         private void PidFile(Action runner)
         {
             try
