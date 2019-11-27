@@ -19,26 +19,27 @@ namespace ServiceHoster.Controller
         private bool _closing;
 
         public ServiceRunner(IEnumerable<string> serviceDlls, Option<string> pidFile, Option<string> statusFile, TextWriter @out, TextWriter err)
+            :this (serviceDlls, serviceDlls.Select(dll => $"{dll}.config"), pidFile, statusFile, @out, err)
+        {
+            // assumes the assembly's config file is in the same location, named the same with .config appended
+        }
+
+        public ServiceRunner(IEnumerable<string> serviceDlls, IEnumerable<string> serviceAppConfig, Option<string> pidFile, Option<string> statusFile, TextWriter @out, TextWriter err)
         {
             _pidFile = pidFile;
             _statusFile = statusFile;
             _out = @out;
             _err = err;
 
-            _hosts = serviceDlls
-                .Select(dll => new
-                {
-                    dll,
-                    config = $"{dll}.config"
-                }) // assumes the assembly's config file is in the same location, named the same with .config appended
-                .Where(h => File.Exists(h.dll) && File.Exists(h.config))
-                .Select(h =>
+            _hosts = serviceDlls.Zip(serviceAppConfig, (dll, config) => new {dll, config})
+               .Where(h => File.Exists(h.dll) && File.Exists(h.config))
+               .Select(h =>
                 {
                     _out.WriteLine($"Creating ServiceHost for for {h.dll} ({h.config}).");
 
                     return new AppDomainHost(h.dll, h.config);
                 })
-                .ToList();
+               .ToList();
         }
 
         public void Dispose()
